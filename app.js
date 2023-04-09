@@ -16,7 +16,7 @@ const marca = require('./routes/marca')
 const inventario = require('./routes/inventario')
 
 // middlewares
-app.use('/api/tipoequipos', tipoEquipo)
+app.use('/api/tiposequipos', tipoEquipo)
 app.use('/api/estados', estado)
 app.use('/api/usuarios', usuario)
 app.use('/api/marcas', marca)

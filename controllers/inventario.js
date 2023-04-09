@@ -10,7 +10,6 @@ const createInventario= async (req = request,
     try{
         const data = req.body
         console.log(data)
-        
         const { usuario, marca, estado, tipoEquipo } = data;
         //validando usuario
         const usuarioDB = Usuario.findOne({

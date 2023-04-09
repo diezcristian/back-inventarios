@@ -2,7 +2,8 @@ const TipoEquipo = require('../models/tipoEquipo')
 const { request, response} = require('express')
 
 // crear
-const createTipoEquipo = async (req = request, res = response) => {
+const createTipoEquipo = async (req = request, 
+    res = response) => {
     try{
         const nombre = req.body.nombre 
             ? req.body.nombre.toUpperCase()

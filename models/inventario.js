@@ -49,4 +49,3 @@ const InventarioSchema = Schema({
 })
 
 module.exports = model('Inventario', InventarioSchema)
-
