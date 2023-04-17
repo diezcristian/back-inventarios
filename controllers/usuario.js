@@ -1,39 +1,90 @@
-const Usuario = require('../models/usuario')
-const { request, response} = require('express')
+const Usuario = require('../models/Usuario')
+const {request, response} = require('express')
 
-// crear
-const createUsuario= async (req = request, 
+
+/**
+ * Creación
+ */
+const createUsuario = (req = request,
     res = response) => {
-    try{
-        const data = req.body
-        const email = data.email
-        console.log(data)
-        const usuarioBD = await Usuario.findOne({ email })
-        if(usuarioBD){
-            return res.status(400).json({msg: 'Ya existe usuario'})
+    
+        const newUsuario = new Usuario ({
+    
+             name: req.body.name,
+             email: req.body.email,
+             estado: req.body.estado || true,
+             date: new Date(),
+             dateUp: new Date()
+         })
+         
+         newUsuario.save().then(savedUsuario => {
+             res.send(savedUsuario)
+         })
+         
+
+
+}
+
+
+/**
+ * Edición
+ */
+
+const editarUsuario = (req = request,
+    res = response, next) => {
+    
+        const {id} = req.params
+
+        const usuario = req.body
+        const newUsuarioInfo = {
+            name: usuario.name,
+            email: usuario.email,
+            estado: usuario.estado || false,
         }
-        const usuario = new Usuario(data)
-        console.log(usuario)
-        await usuario.save()
-        return res.status(201).json(usuario)
-    }catch(e){
-        console.log(e)
-        return res.status(500).json({e})
+        Usuario.findByIdAndUpdate(id, newUsuarioInfo, { new: true})
+        .then(result => {
+            res.json(result)
+        })
+}
+
+
+/**
+ * Listar todos
+ */
+const getUsuario = (req = request,
+    res = response) => {
+    
+        Usuario.find({}).then(equipos => {
+            res.json(equipos)
+        })
+}
+
+const getUsuarioId = (req = request,
+    res = response, next) => {
+    
+        const {id} = req.params
+        //const student = students.find( c => c.id === parseInt(req.params.id))
+        Usuario.findById(id).then(equipo => {
+            if (equipo){ return res.json(equipo) 
+            } else { res.status(404).send("Equipo no encontrado");
+        
+        }}).catch(error => {
+            next(error)
+        })
     }
-}
-//listar todos
-const getUsuarios= async (req = request, 
-    res = response) => {
-        try{
-            const { estado } = req.query
-            const usuariosDB = await Usuario.find({estado})//select * from estados where estado=?
-            return res.json(usuariosDB)
-        }catch(e){
-            return res.status(500).json({
-                msg: 'Error general ' + e
-            })
-        }
-}
 
+    /**
+ * Eliminar
+ */
+    const deleteUsuario = (req = request,
+        res = response, next) => {
+        
+            const {id} = req.params
+    
+    Usuario.findByIdAndDelete(id).then(resultado => {
+        res.status(204).end()
+    }).catch(error => next(error))
+    }
+    
 
-module.exports = {createUsuario, getUsuarios}
+module.exports = {createUsuario, getUsuario, getUsuarioId, editarUsuario, deleteUsuario}

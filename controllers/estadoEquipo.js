@@ -1,32 +1,22 @@
-const Equipo = require('../models/Equipo')
+const estadoEquipo = require('../models/estadoEquipo')
 const {request, response} = require('express')
 
 
 /**
  * Creación
  */
-const createTipoEquipo = async (req = request,
+const createEstadoEquipos = (req = request,
     res = response) => {
     
-
-        const name = req.body.name
-        const newEquipo = new Equipo ({
+        const newEstadoEquipo = new estadoEquipo ({
     
              name: req.body.name,
-             estado: req.body.estado || true,
+             estado: req.body.estado || false,
              date: new Date(),
              dateUp: new Date()
-    
-         } )
+         })
          
-
-         const validarEquipo = await Equipo.findOne({name})
-
-         if (validarEquipo){
-            return res.status(400).json({msg: "Ya existe"})
-         }
-
-         newEquipo.save().then(savedEquipo => {
+         newEstadoEquipo.save().then(savedEquipo => {
              res.send(savedEquipo)
          })
          
@@ -39,17 +29,17 @@ const createTipoEquipo = async (req = request,
  * Edición
  */
 
-const EditarTipodeEquipo = (req = request,
+const EditarEstadoEquipos = (req = request,
     res = response, next) => {
     
         const {id} = req.params
 
         const equipo = req.body
-        const newEquipoInfo = {
+        const newEstadoEquipoInfo = {
             name: equipo.name,
             estado: equipo.estado || false,
         }
-        Equipo.findByIdAndUpdate(id, newEquipoInfo, { new: true})
+        estadoEquipo.findByIdAndUpdate(id, newEstadoEquipoInfo, { new: true})
         .then(result => {
             res.json(result)
         })
@@ -59,20 +49,20 @@ const EditarTipodeEquipo = (req = request,
 /**
  * Listar todos
  */
-const getTipoEquipos = (req = request,
+const getEstadoEquipos = (req = request,
     res = response) => {
     
-        Equipo.find({}).then(equipos => {
+        estadoEquipo.find({}).then(equipos => {
             res.json(equipos)
         })
 }
 
-const getTipodeEquiposId = (req = request,
+const getEstadoEquiposId = (req = request,
     res = response, next) => {
     
         const {id} = req.params
         //const student = students.find( c => c.id === parseInt(req.params.id))
-        Equipo.findById(id).then(equipo => {
+        estadoEquipo.findById(id).then(equipo => {
             if (equipo){ return res.json(equipo) 
             } else { res.status(404).send("Equipo no encontrado");
         
@@ -84,15 +74,16 @@ const getTipodeEquiposId = (req = request,
     /**
  * Eliminar
  */
-    const deleteTipoEquipos = (req = request,
+    const deleteEstadoEquipos = (req = request,
         res = response, next) => {
         
             const {id} = req.params
     
-    Equipo.findByIdAndDelete(id).then(resultado => {
+    estadoEquipo.findByIdAndDelete(id).then(resultado => {
         res.status(204).end()
     }).catch(error => next(error))
     }
     
 
-module.exports = {createTipoEquipo, getTipoEquipos, getTipodeEquiposId, EditarTipodeEquipo, deleteTipoEquipos}
+module.exports = {createEstadoEquipos, getEstadoEquipos, getEstadoEquiposId, EditarEstadoEquipos,
+     deleteEstadoEquipos}

@@ -1,13 +1,34 @@
 const { Router } = require('express')
-const { createInventario, getInventarios} =
- require('../controllers/inventario')
+const { createInventario, getInventarios, getInventarioId, EditarInventario, 
+    deleteInventario } = require('../controllers/Inventario')
+const app = require("../app")
+const notFound = require("../middleware/notFound");
+const handleErrors = require("../middleware/handleErrors");
+
 
 const router = Router()
+
 
 // crear
 router.post('/', createInventario)
 
-// consultar todos
-router.get('/', getInventarios)
 
-module.exports = router;
+// editar
+//router.put('/', updateTipoInventario)
+router.put('/:id', EditarInventario)
+
+// listar
+router.get('/mostrar', getInventarios)
+
+router.get('/:id', getInventarioId)
+
+//Eliminar
+router.delete('/:id', deleteInventario)
+
+
+//app.use(notFound)
+//app.use(handleErrors)
+
+
+
+module.exports = router

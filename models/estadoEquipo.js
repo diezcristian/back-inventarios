@@ -1,21 +1,14 @@
 const {Schema, model} = require("mongoose")
 //Definición de esquema / plantilla de datos
-const usuarioSchema = new Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true
-    },
+const estadoequipoSchema = new Schema({
+    name: String,
     estado: Boolean,
     date: Date,
     dateUp: Date
 })
 
 
-usuarioSchema.set("toJSON", {
+estadoequipoSchema.set("toJSON", {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id
         delete returnedObject._id
@@ -24,16 +17,16 @@ usuarioSchema.set("toJSON", {
 })
 
 //crear modelo, que permite crear una clase para tener instancias 
-const Usuario = model("Usuario", usuarioSchema)
+const estadoEquipo = model("estadoEquipo", estadoequipoSchema)
 
 /*
-Usuario.find({}).then(result => {
+Equipo.find({}).then(result => {
     console.log(result)
     mongoose.connection.close()
 })
 
 
-const equipo = new Usuario({
+const equipo = new Equipo({
     name: "Movil",
     estado: true,
     date: new Date(),
@@ -49,4 +42,4 @@ equipo.save()
     console.error(error)
 })
 */
-module.exports = Usuario
+module.exports = estadoEquipo

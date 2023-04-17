@@ -1,6 +1,6 @@
 const { Router } = require('express')
-const { createUsuario, getUsuario, getUsuarioId, editarUsuario, 
-    deleteUsuario } = require('../controllers/Usuario')
+const { createEstadoEquipos, getEstadoEquipos, getEstadoEquiposId, EditarEstadoEquipos, 
+    deleteEstadoEquipos } = require('../controllers/estadoEquipo')
 const app = require("../app")
 const notFound = require("../middleware/notFound");
 const handleErrors = require("../middleware/handleErrors");
@@ -10,20 +10,20 @@ const router = Router()
 
 
 // crear
-router.post('/', createUsuario)
+router.post('/', createEstadoEquipos)
 
 
 // editar
 //router.put('/', updateTipoEquipo)
-router.put('/:id', editarUsuario)
+router.put('/:id', EditarEstadoEquipos)
 
 // listar
-router.get('/mostrar', getUsuario)
+router.get('/mostrar', getEstadoEquipos)
 
-router.get('/:id', getUsuarioId)
+router.get('/:id', getEstadoEquiposId)
 
 //Eliminar
-router.delete('/:id', deleteUsuario)
+router.delete('/:id', deleteEstadoEquipos)
 
 
 //app.use(notFound)

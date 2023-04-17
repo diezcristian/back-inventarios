@@ -1,88 +1,167 @@
-const Inventario = require('../models/inventario')
-const { request, response} = require('express')
-const Usuario = require('../models/usuario')
-const Marca = require('../models/marca')
-const Estado = require('../models/estado')
-const TipoEquipo = require('../models/tipoEquipo')
-// crear
-const createInventario= async (req = request, 
+const Inventario = require('../models/Inventario')
+const {request, response} = require('express')
+const estadoEquipo = require('../models/estadoEquipo')
+const Equipo = require('../models/Equipo')
+const Usuario = require('../models/Usuario')
+const Marca = require('../models/Marca')
+
+
+
+/**
+ * Creación
+ */
+const createInventario = async (req = request,
     res = response) => {
-    try{
+    
+try{
+
+
         const data = req.body
-        console.log(data)
-        const { usuario, marca, estado, tipoEquipo } = data;
-        //validando usuario
-        const usuarioDB = Usuario.findOne({
-            _id: usuario._id,
-            estado: true
-        })// select * from usuarios where _id=? and estado=true
-        if(!usuarioDB){
-            return res.status(400).json({msg: 'usuario invalido'})
+        
+
+        const {usuario, marca, estado, equipo} = data
+
+        const usuariodb = Usuario.findOne({_id: usuario._id,
+        estado: true})
+
+        if(!usuariodb){
+            return res.status(400).json({msg: "Usuario invalido"})
         }
-        // validando marca
-        const marcaDB = Marca.findOne({
+
+        const marcadb = Marca.findOne({
             _id: marca._id,
             estado: true
-        })// select * from marcas where _id=? and estado=true
-        if(!marcaDB){
-            return res.status(400).json({msg: 'marca invalida'})
+        })
+        if(!marcadb){
+            return res.status(400).json({msg: "marca invalida"})
         }
-        // validando estado
-        const estadoDB = Estado.findOne({
+        //estado
+        const estadodb = estadoEquipo.findOne({
             _id: estado._id,
             estado: true
-        })// select * from estados where _id=? and estado=true
-        if(!estadoDB){
-           return res.status(400).json({msg: 'estado invalido'})
+        })
+        if(!estadodb){
+            return res.status(400).json({msg: "estado del equipo invalida"})
         }
-        // validando tipo equipo
-        const tipoEquipoDB = TipoEquipo.findOne({
-            _id: tipoEquipo._id,
+        //equipo
+        const equipo_db = Equipo.findOne({
+            _id: equipo._id,
             estado: true
-        })// select * from tipoequipos where _id=? and estado=true
-        if(!tipoEquipoDB){
-           return res.status(400).json({msg: 'estado invalido'})
-        }      
-        const inventario = new Inventario(data)
+        })
+        if(!equipo_db){
+            return res.status(400).json({msg: "equipo invalido"})
+        }
 
+        const inventario = new Inventario(data)
         await inventario.save()
-        
         return res.status(201).json(inventario)
+
     }catch(e){
         return res.status(500).json({
-            msg: 'Error general ' + e
+            msg: "Error general " + e
         })
     }
+        /*
+        const newInventario = new Inventario ({
+    
+             name: req.body.name,
+             estado: req.body.estado || false,
+             date: new Date(),
+             dateUp: new Date()
+    
+         } )
+         */
+         /*
+         const validarInventario = await Inventario.findOne({name})
+
+         if (validarInventario){
+            return console.log("Ya existe")
+         }
+
+         newInventario.save().then(savedInventario => {
+             res.send(savedInventario)
+         })
+         
+*/
+
 }
 
-//listar todos
-const getInventarios = async (req = request, 
+
+/**
+ * Edición
+ */
+
+const EditarInventario = (req = request,
     res = response) => {
-        try{
-            const inventariosDB = await Inventario.find()//select * from inventarios
-            return res.json(inventariosDB)
-        }catch(e){
-            return res.status(500).json({
-                msg: 'Error general ' + e
-            })
+    
+        const {id} = req.params
+
+        const info = req.body
+        const newInventarioInfo = {
+            serial: info.serial,
+            modelo: info.modelo,
+            descrip: info.descrip,
+            foto: info.foto,
+            color: info.color,
+            fechaCompra: info.fechaCompra,
+            precio: info.precio,
+            usuario: info.usuario,
+            marca: info.marca,
+            estado: info.estado,
+            equipo: info.equipo
         }
+        Inventario.findByIdAndUpdate(id, newInventarioInfo, { new: true})
+        .then(result => {
+            res.json(result)
+        }).catch(error => {
+            console.error(error)
+        })
 }
 
-// actualizar inventario
-const updateInventarioByID = async (req = request, 
-    res = response) => {
 
-    try{
-        const { id } = req.params
-        const data = req.body
-        const inventario  = await Inventario.findByIdAndUpdate(id, data, {new: true})
-        return res.status(201).json(inventario)
-    }catch(e){
-        console.log(e)
-        return res.status(500).json({msj: 'Error'}) 
+/**
+ * Listar todos
+ */
+const getInventarios = (req = request,
+    res = response) => {
+    
+        Inventario.find({}).populate({
+            path: "usuario",
+            match: {estado: true}
+        }).populate({path: "marca",
+        match: {estado: true}}).populate({path: "estado",
+        match: {estado: true}}).populate({path: "equipo",
+        match: {estado: true}}).then(equipos => {
+            res.json(equipos)
+        })
+}
+
+const getInventarioId = (req = request,
+    res = response, next) => {
+    
+        const {id} = req.params
+        //const student = students.find( c => c._id === parseInt(req.params._id))
+        Inventario.findById(id).then(equipo => {
+            if (equipo){ return res.json(equipo) 
+            } else { res.status(404).send("Equipo no encontrado");
+        
+        }}).catch(error => {
+            next(error)
+        })
     }
 
-}
+    /**
+ * Eliminar
+ */
+    const deleteInventario = (req = request,
+        res = response, next) => {
+        
+            const {id} = req.params
+    
+    Inventario.findByIdAndDelete(id).then(resultado => {
+        res.json(resultado)
+    }).catch(error => next(error))
+    }
+    
 
-
-module.exports = { createInventario, getInventarios, updateInventarioByID}
+module.exports = {createInventario, getInventarios, getInventarioId, EditarInventario, deleteInventario}

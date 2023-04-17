@@ -1,18 +1,19 @@
-const { Schema, model} = require('mongoose')
-
-const InventarioSchema = Schema({
+const {Schema, model} = require("mongoose")
+//Definición de esquema / plantilla de datos
+const inventarioSchema = new Schema({
     serial: {
         type: String,
-        required: [true, 'Serial requerido'],
-        unique: [true, 'equipo en uso']
+        required: [true, "Serial requerido"],
+        unique: [true, "equipo en uso"]
     },
     modelo: {
         type: String,
-        required: [true, 'modelo requerido'],
-        unique: [true, 'modelo debe ser único']
+        required: [true, "modelo requerido"],
+        unique: [true, "modelo debe ser unico"]
     },
-    descripcion: {
+    descrip: {
         type: String
+
     },
     foto: {
         type: String
@@ -28,24 +29,60 @@ const InventarioSchema = Schema({
     },
     usuario: {
         type: Schema.Types.ObjectId,
-        ref: 'Usuario',
+        ref: "Usuario",
         required: true
     },
     marca: {
         type: Schema.Types.ObjectId,
-        ref: 'Marca',
+        ref: "Marca",
         required: true
     },
     estado: {
         type: Schema.Types.ObjectId,
-        ref: 'Estado',
+        ref: "estadoEquipo",
         required: true
     },
-    tipoEquipo: {
+    equipo: {
         type: Schema.Types.ObjectId,
-        ref: 'TipoEquipo',
+        ref: "Equipo",
         required: true
+    }
+
+})
+
+
+inventarioSchema.set("toJSON", {
+    transform: (document, returnedObject) => {
+        returnedObject.id = returnedObject._id
+        delete returnedObject._id
+        delete returnedObject.__v
     }
 })
 
-module.exports = model('Inventario', InventarioSchema)
+//crear modelo, que permite crear una clase para tener instancias 
+const Inventario = model("Inventario", inventarioSchema)
+
+/*
+Equipo.find({}).then(result => {
+    console.log(result)
+    mongoose.connection.close()
+})
+
+
+const equipo = new Equipo({
+    name: "Movil",
+    estado: true,
+    date: new Date(),
+    dateUp: new Date()
+
+})
+
+equipo.save()
+.then(result => {
+    console.log(result)
+    mongoose.connection.close()
+}).catch(error => {
+    console.error(error)
+})
+*/
+module.exports = Inventario

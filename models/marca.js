@@ -1,23 +1,48 @@
-const { Schema, model} = require('mongoose')
-
-const MarcaSchema = Schema({
-    nombre: {
+const {Schema, model} = require("mongoose")
+//Definición de esquema / plantilla de datos
+const marcaSchema = new Schema({
+    name: {
         type: String,
-        required: [true, 'Nombre requerido']
-    },
-    estado: {
-        type: Boolean,
-        default: true,
         required: true
     },
-    fechaCreacion: {
-        type: Date,
-        default: new Date()
-    },
-    fechaActualizacion: {
-        type: Date,
-        default: new Date()
+    estado: Boolean,
+    date: Date,
+    dateUp: Date
+})
+
+
+marcaSchema.set("toJSON", {
+    transform: (document, returnedObject) => {
+        returnedObject.id = returnedObject._id
+        delete returnedObject._id
+        delete returnedObject.__v
     }
 })
 
-module.exports = model('Marca', MarcaSchema)
+//crear modelo, que permite crear una clase para tener instancias 
+const Marca = model("Marca", marcaSchema)
+
+/*
+Marca.find({}).then(result => {
+    console.log(result)
+    mongoose.connection.close()
+})
+
+
+const equipo = new Marca({
+    name: "Movil",
+    estado: true,
+    date: new Date(),
+    dateUp: new Date()
+
+})
+
+equipo.save()
+.then(result => {
+    console.log(result)
+    mongoose.connection.close()
+}).catch(error => {
+    console.error(error)
+})
+*/
+module.exports = Marca

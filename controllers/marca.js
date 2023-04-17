@@ -1,44 +1,88 @@
-const Marca = require('../models/marca')
-const { request, response} = require('express')
+const Marca = require('../models/Marca')
+const {request, response} = require('express')
 
-// crear
-const createMarca = async (req = request, 
+
+/**
+ * Creación
+ */
+const createMarca = (req = request,
     res = response) => {
-    try{
-        const nombre = req.body.nombre 
-            ? req.body.nombre.toUpperCase()
-            : ''
-        const marcaDB = await Marca.findOne({nombre})//select * from tipoEquipo where nombre=?
+    
+        const newMarca = new Marca ({
+    
+             name: req.body.name,
+             estado: req.body.estado || false,
+             date: new Date(),
+             dateUp: new Date()
+         })
+         
+         newMarca.save().then(savedMarca => {
+             res.send(savedMarca)
+         })
+         
+
+
+}
+
+
+/**
+ * Edición
+ */
+
+const editarMarca = (req = request,
+    res = response, next) => {
+    
+        const {id} = req.params
+
+        const marca = req.body
+        const newMarcaInfo = {
+            name: marca.name,
+            estado: marca.estado || false,
+        }
+        Marca.findByIdAndUpdate(id, newMarcaInfo, { new: true})
+        .then(result => {
+            res.json(result)
+        })
+}
+
+
+/**
+ * Listar todos
+ */
+const getMarca = (req = request,
+    res = response) => {
+    
+        Marca.find({}).then(equipos => {
+            res.json(equipos)
+        })
+}
+
+const getMarcaId = (req = request,
+    res = response, next) => {
+    
+        const {id} = req.params
+        //const student = students.find( c => c.id === parseInt(req.params.id))
+        Marca.findById(id).then(equipo => {
+            if (equipo){ return res.json(equipo) 
+            } else { res.status(404).send("Equipo no encontrado");
         
-        if(marcaDB){
-            return res.status(400).json({msg: 'Ya existe'})
-        }
-        const data = {
-            nombre  // nombre: nombre
-        }
-        const marca = new Marca(data)
-        console.log(marca)
-        await marca.save()
-        return res.status(201).json(marca)
-    }catch(e){
-        return res.status(500).json({
-            msg: 'Error general ' + e
+        }}).catch(error => {
+            next(error)
         })
     }
-}
 
-//listar todos
-const getMarcas = async (req = request, 
-    res = response) => {
-        try{
-            const { estado } = req.query
-            const marcasDB = await Marca.find({estado})//select * from estados where estado=?
-            return res.json(marcasDB)
-        }catch(e){
-            return res.status(500).json({
-                msg: 'Error general ' + e
-            })
-        }
-}
+    /**
+ * Eliminar
+ */
+    const deleteMarca = (req = request,
+        res = response, next) => {
+        
+            const {id} = req.params
+    
+    Marca.findByIdAndDelete(id).then(resultado => {
+        res.status(204).end()
+    }).catch(error => next(error))
+    }
+    
 
-module.exports = {createMarca, getMarcas}
+module.exports = {createMarca, getMarca, getMarcaId, editarMarca, deleteMarca}

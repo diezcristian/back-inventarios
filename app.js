@@ -1,25 +1,32 @@
 const express = require('express')
 const app = express()
-const cors = require('cors')
+const notFound = require("./middleware/notFound");
+const handleErrors = require("./middleware/handleErrors");
+const cors = require("cors")
 
-// middlewares
+
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 app.use(cors({
     origin: '*'
 }))
 
+
 const tipoEquipo = require('./routes/tipoEquipo')
-const estado = require('./routes/estado')
-const usuario = require('./routes/usuario')
-const marca = require('./routes/marca')
-const inventario = require('./routes/inventario')
+const estadoEquipo = require('./routes/estadoEquipo')
+const Usuario = require('./routes/Usuario')
+const Marca = require('./routes/Marca')
+const Inventario = require('./routes/Inventario');
+
 
 // middlewares
-app.use('/api/tiposequipos', tipoEquipo)
-app.use('/api/estados', estado)
-app.use('/api/usuarios', usuario)
-app.use('/api/marcas', marca)
-app.use('/api/inventarios', inventario)
+app.use('/api/tipoequipos', tipoEquipo)
+app.use('/api/estadoequipos', estadoEquipo)
+app.use('/api/usuarios', Usuario)
+app.use('/api/marcas', Marca)
+app.use('/api/inventarios', Inventario)
+
+app.use(notFound)
+app.use(handleErrors)
 
 module.exports = app
